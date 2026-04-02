@@ -1,1 +1,400 @@
-# Kamara-options
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#06090f">
+<title>Kamara Options</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--green:#00ff88;--red:#ff4444;--yellow:#ffd700;--blue:#4af;--bg:#06090f;--bg2:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--text:#dde4ef;--muted:#556677;--dark:#334455;--radius:14px;--safe-bottom:env(safe-area-inset-bottom,16px)}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',sans-serif;display:flex;flex-direction:column}
+.header{background:rgba(6,9,15,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:100;padding-top:max(12px,env(safe-area-inset-top,12px))}
+.h-left .sub{font-size:9px;color:var(--green);letter-spacing:3px;font-family:'Courier New',monospace}
+.h-left .title{font-size:18px;font-weight:800;letter-spacing:-0.3px}
+.h-badges{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.pill{font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700;letter-spacing:1px;font-family:'Courier New',monospace}
+.pill-r{background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.3);color:var(--red)}
+.pill-y{background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);color:var(--yellow)}
+.tabs{display:flex;background:rgba(0,0,0,0.3);border-bottom:1px solid var(--border);flex-shrink:0}
+.tab{flex:1;padding:11px 4px;text-align:center;font-size:11px;font-weight:700;color:var(--dark);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;letter-spacing:.5px}
+.tab.active{color:var(--green);border-bottom-color:var(--green);background:rgba(0,255,136,0.04)}
+.screens{flex:1;overflow:hidden;position:relative}
+.screen{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 14px;padding-bottom:calc(20px + var(--safe-bottom));display:none}
+.screen.active{display:block}
+.scan-header{margin-bottom:14px}
+.scan-header h2{font-size:15px;font-weight:800;margin-bottom:4px}
+.scan-header p{font-size:11px;color:var(--muted)}
+.search-box{width:100%;padding:13px 16px;background:rgba(0,0,0,0.5);border:1px solid rgba(0,255,136,0.25);border-radius:12px;color:var(--text);font-size:15px;font-family:inherit;outline:none;margin-bottom:12px;letter-spacing:.5px}
+.search-box::placeholder{color:var(--dark);font-size:14px}
+.sector-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;scrollbar-width:none}
+.sector-row::-webkit-scrollbar{display:none}
+.s-chip{flex-shrink:0;padding:6px 12px;font-size:11px;font-weight:700;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:20px;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s;font-family:inherit}
+.s-chip.active{background:rgba(0,255,136,0.12);border-color:rgba(0,255,136,0.35);color:var(--green)}
+.ticker-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.ticker-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:3px}
+.ticker-card:active{transform:scale(0.97);background:rgba(255,255,255,0.06)}
+.ticker-card.selected{border-color:var(--green);background:rgba(0,255,136,0.07)}
+.tc-symbol{font-size:16px;font-weight:900;font-family:'Courier New',monospace;letter-spacing:1px}
+.tc-name{font-size:10px;color:var(--muted)}
+.tc-row{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+.tc-price{font-size:12px;font-weight:700;color:var(--green)}
+.tc-trend{font-size:9px;padding:2px 6px;border-radius:6px;font-weight:700}
+.bear{background:rgba(255,68,68,0.15);color:var(--red)}
+.bull{background:rgba(0,255,136,0.12);color:var(--green)}
+.neut{background:rgba(255,215,0,0.1);color:var(--yellow)}
+.no-res{grid-column:1/-1;text-align:center;padding:32px 0;color:var(--dark);font-size:12px}
+.analyze-top{background:var(--bg2);border:1px solid rgba(0,255,136,0.15);border-radius:var(--radius);padding:14px;margin-bottom:14px}
+.at-label{font-size:9px;color:var(--dark);letter-spacing:3px;margin-bottom:10px;font-family:'Courier New',monospace}
+.selected-ticker-display{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.std-left .sym{font-size:24px;font-weight:900;font-family:'Courier New',monospace}
+.std-left .nm{font-size:11px;color:var(--muted);margin-top:1px}
+.std-right{text-align:right}
+.std-right .price{font-size:20px;font-weight:900;color:var(--green)}
+.std-right .trend-big{font-size:11px;padding:3px 8px;border-radius:8px;font-weight:700;margin-top:3px;display:inline-block}
+.no-ticker-msg{text-align:center;padding:20px 0;color:var(--dark);font-size:12px}
+.exp-label{font-size:9px;color:var(--dark);letter-spacing:2px;margin-bottom:8px;font-family:'Courier New',monospace}
+.exp-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+.exp-row::-webkit-scrollbar{display:none}
+.exp-pill{flex-shrink:0;padding:7px 12px;font-size:11px;font-weight:700;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:20px;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s;font-family:'Courier New',monospace}
+.exp-pill.active{background:rgba(0,255,136,0.12);border-color:rgba(0,255,136,0.35);color:var(--green)}
+.exp-pill.leap{background:rgba(68,170,255,0.06);border-color:rgba(68,170,255,0.2);color:var(--blue)}
+.exp-pill.leap.active{background:rgba(68,170,255,0.15);border-color:rgba(68,170,255,0.4);color:var(--blue)}
+.options-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.opt-label{font-size:9px;color:var(--dark);letter-spacing:2px;margin-bottom:6px;font-family:'Courier New',monospace}
+.toggle-row{display:flex;gap:4px;background:rgba(0,0,0,0.3);padding:3px;border-radius:10px}
+.tog{flex:1;padding:6px 4px;border:none;border-radius:8px;font-size:10px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.5px;transition:all .15s}
+.tog.on{background:rgba(0,255,136,0.15);color:var(--green);border:1px solid rgba(0,255,136,0.3)}
+.tog.off{background:transparent;color:var(--dark);border:1px solid transparent}
+.tog.on.blue-tog{background:rgba(68,170,255,0.15);color:var(--blue);border-color:rgba(68,170,255,0.3)}
+.run-btn{width:100%;padding:16px;margin-top:14px;background:linear-gradient(135deg,rgba(0,255,136,0.18),rgba(0,255,136,0.08));border:1px solid rgba(0,255,136,0.4);border-radius:14px;color:var(--green);font-size:15px;font-weight:900;font-family:'Courier New',monospace;cursor:pointer;letter-spacing:2px;transition:all .15s}
+.run-btn:active{transform:scale(0.98);background:rgba(0,255,136,0.25)}
+.results-area{display:none}
+.result-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+.rc-label{font-size:9px;color:var(--dark);letter-spacing:3px;margin-bottom:10px;font-family:'Courier New',monospace}
+.score-card{border-radius:var(--radius);padding:16px;margin-bottom:10px}
+.sc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.sc-title{font-size:20px;font-weight:900;font-family:'Courier New',monospace}
+.sc-score{text-align:center}
+.sc-num{font-size:46px;font-weight:900;line-height:1}
+.sc-den{font-size:10px;color:var(--dark)}
+.metrics-2col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.metric-box{background:rgba(0,0,0,0.35);border-radius:10px;padding:10px 12px}
+.mb-label{font-size:8px;color:var(--dark);letter-spacing:2px;margin-bottom:3px;font-family:'Courier New',monospace}
+.mb-val{font-size:16px;font-weight:800;color:var(--green)}
+.mb-sub{font-size:9px;color:var(--dark);margin-top:2px}
+.oi-bar{padding:10px 12px;border-radius:10px;font-size:11px;font-weight:700;margin-bottom:10px}
+.prob-label-row{display:flex;justify-content:space-between;margin-bottom:4px;font-size:10px}
+.prob-track{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;margin-bottom:10px}
+.prob-fill{height:100%;border-radius:3px}
+.verdict-box{padding:12px 14px;border-radius:10px;font-size:12px;font-weight:800;letter-spacing:.5px;font-family:'Courier New',monospace}
+.catalyst-box{background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.12);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--yellow);margin-bottom:10px}
+.checklist{display:flex;flex-direction:column;gap:6px}
+.check-item{padding:9px 11px;border-radius:8px;font-size:11px;line-height:1.4}
+.strikes-list{display:flex;flex-direction:column;gap:6px}
+.strike-row{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center}
+.strike-row.best-row{border-color:rgba(0,255,136,0.3);background:rgba(0,255,136,0.04)}
+.sr-strike{font-size:15px;font-weight:900;font-family:'Courier New',monospace}
+.sr-mid{display:flex;flex-direction:column;gap:2px}
+.sr-type{font-size:10px;font-weight:700}
+.sr-oi{font-size:9px;color:var(--muted)}
+.sr-right{text-align:right}
+.sr-limit{font-size:14px;font-weight:800;color:var(--green);font-family:'Courier New',monospace}
+.sr-cost{font-size:10px;color:var(--muted)}
+.sr-badge{font-size:8px;padding:2px 7px;border-radius:5px;margin-top:3px;display:inline-block;font-family:'Courier New',monospace}
+.sb-pass{background:rgba(0,255,136,0.12);color:var(--green)}
+.sb-fail{background:rgba(255,68,68,0.12);color:var(--red)}
+.tip-box{background:rgba(68,170,255,0.05);border:1px solid rgba(68,170,255,0.12);border-radius:10px;padding:12px 14px;font-size:11px;color:#7ab;line-height:1.7;margin-bottom:10px}
+.tip-box strong{color:var(--blue)}
+.warn-box{background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);border-radius:10px;padding:10px 13px;font-size:11px;color:var(--yellow);margin-bottom:10px}
+.err-box{background:rgba(255,68,68,0.08);border:1px solid rgba(255,68,68,0.2);border-radius:10px;padding:12px 14px;font-size:12px;color:#f77;margin-bottom:10px;display:none}
+.no-qual-box{background:rgba(255,68,68,0.08);border:1px solid rgba(255,68,68,0.2);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--red);margin-bottom:10px;font-weight:700}
+.disq-box{background:rgba(255,68,68,0.03);border:1px solid rgba(255,68,68,0.1);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.disq-label{font-size:9px;color:var(--red);letter-spacing:3px;margin-bottom:8px;font-family:'Courier New',monospace}
+.disq-item{font-size:10px;color:#443333;margin-bottom:3px}
+.summary-box{background:rgba(0,255,136,0.02);border:1px solid rgba(0,255,136,0.07);border-radius:10px;padding:12px 14px;font-size:11px;line-height:1.7;color:#667788;margin-bottom:10px}
+.clear-btn{width:100%;padding:12px;margin-top:4px;background:rgba(255,68,68,0.06);border:1px solid rgba(255,68,68,0.15);border-radius:10px;color:#f77;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:1px}
+.rule-section{margin-bottom:18px}
+.rule-sec-title{font-size:11px;color:var(--green);letter-spacing:3px;margin-bottom:10px;font-family:'Courier New',monospace;padding-bottom:6px;border-bottom:1px solid rgba(0,255,136,0.1)}
+.rule-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;padding:10px 12px;background:var(--bg2);border-radius:10px;border:1px solid var(--border)}
+.ri-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.ri-text{flex:1}
+.ri-title{font-size:12px;font-weight:800;margin-bottom:2px;font-family:'Courier New',monospace}
+.ri-desc{font-size:11px;color:var(--muted);line-height:1.5}
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.stat-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center}
+.sb-val{font-size:18px;font-weight:900;font-family:'Courier New',monospace;margin-bottom:2px}
+.sb-lbl{font-size:9px;color:var(--dark);letter-spacing:2px}
+::-webkit-scrollbar{width:2px;height:2px}
+::-webkit-scrollbar-thumb{background:rgba(0,255,136,0.2);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="h-left">
+    <div class="sub">KAMARA OPTIONS</div>
+    <div class="title">Options Analyzer</div>
+  </div>
+  <div class="h-badges">
+    <span class="pill pill-r">▼ BEARISH</span>
+    <span class="pill pill-y">VIX ~27</span>
+  </div>
+</div>
+<div class="tabs">
+  <div class="tab active" id="tab-scan" onclick="switchTab('scan')">🔍 SCAN</div>
+  <div class="tab" id="tab-analyze" onclick="switchTab('analyze')">📊 ANALYZE</div>
+  <div class="tab" id="tab-rules" onclick="switchTab('rules')">📋 RULES</div>
+</div>
+<div class="screens">
+<div class="screen active" id="screen-scan">
+  <div class="scan-header"><h2>Select a Ticker</h2><p>Tap any stock to load it for analysis</p></div>
+  <input class="search-box" id="searchBox" placeholder="🔍  Search ticker or company name..." oninput="filterTickers()" autocomplete="off" autocorrect="off" spellcheck="false">
+  <div class="sector-row" id="sectorRow"></div>
+  <div class="ticker-grid" id="tickerGrid"></div>
+  <div style="font-size:10px;color:var(--dark);text-align:center;padding-bottom:8px" id="tickerCount"></div>
+</div>
+<div class="screen" id="screen-analyze">
+  <div id="errBox" class="err-box"></div>
+  <div class="analyze-top">
+    <div class="at-label">SELECTED TICKER</div>
+    <div id="tickerDisplay"><div class="no-ticker-msg">← Go to SCAN tab and tap a ticker</div></div>
+    <div id="expSection" style="display:none">
+      <div class="exp-label" style="margin-top:12px">EXPIRATION DATE</div>
+      <div class="exp-row" id="expRow"></div>
+      <div class="options-row">
+        <div class="opt-group">
+          <div class="opt-label">TRADE MODE</div>
+          <div class="toggle-row">
+            <button class="tog on" id="modeSwing" onclick="setMode('swing')">SWING</button>
+            <button class="tog off" id="modeLeap" onclick="setMode('leap')">LEAP</button>
+          </div>
+        </div>
+        <div class="opt-group">
+          <div class="opt-label">DIRECTION</div>
+          <div class="toggle-row">
+            <button class="tog on" id="dirAuto" onclick="setDir('AUTO')">AUTO</button>
+            <button class="tog off" id="dirCall" onclick="setDir('CALL')">CALL</button>
+            <button class="tog off" id="dirPut" onclick="setDir('PUT')">PUT</button>
+          </div>
+        </div>
+      </div>
+      <div id="leapNote" style="display:none;font-size:10px;color:var(--blue);margin-top:8px;padding:8px 10px;background:rgba(68,170,255,0.06);border-radius:8px;border:1px solid rgba(68,170,255,0.15)">📘 LEAP mode — 180+ days · Budget $2,000 · Target 100-300% gain</div>
+      <button class="run-btn" id="runBtn" onclick="runScan()">RUN SCAN ▶</button>
+    </div>
+  </div>
+  <div class="results-area" id="resultsArea"></div>
+</div>
+<div class="screen" id="screen-rules">
+  <div class="rule-section">
+    <div class="rule-sec-title">THE 10-POINT CHECKLIST</div>
+    <div class="rule-item"><div class="ri-icon">📈</div><div class="ri-text"><div class="ri-title">1. TREND CONFIRMED</div><div class="ri-desc">Only trade in the direction the stock is already moving. Uptrend = calls. Downtrend = puts.</div></div></div>
+    <div class="rule-item"><div class="ri-icon">📊</div><div class="ri-text"><div class="ri-title">2. OPEN INTEREST 10,000+</div><div class="ri-desc">Minimum 10,000 OI on any contract. Below that = no liquidity = hard to exit.</div></div></div>
+    <div class="rule-item"><div class="ri-icon">📉</div><div class="ri-text"><div class="ri-title">3. VOLUME CONFIRMS</div><div class="ri-desc">Volume should move in the same direction as price.</div></div></div>
+    <div class="rule-item"><div class="ri-icon">💰</div><div class="ri-text"><div class="ri-title">4. LIMIT ORDER ALWAYS</div><div class="ri-desc">Entry = (Bid + Ask) ÷ 2. Never use a market order on options.</div></div></div>
+    <div class="rule-item"><div class="ri-icon">🌡️</div><div class="ri-text"><div class="ri-title">5. IV RANK UNDER 50%</div><div class="ri-desc">High IV = expensive options. Wait for IV to come down before entering.</div></div></div>
+    <div class="rule-item"><div class="ri-icon">📅</div><div class="ri-text"><div class="ri-title">6. EXPIRATION WINDOW</div><div class="ri-desc">Swing: 10–45 days. LEAP: 180+ days. Too close = time decay kills you.</div></div></div>
+    <div class="rule-item"><div class="ri-icon">🛡️</div><div class="ri-text"><div class="ri-title">7. MAX LOSS KNOWN</div><div class="ri-desc">Max loss = premium paid. Never risk more than 5% of account on one trade.</div></div></div>
+    <div class="rule-item"><div class="ri-icon">🎯</div><div class="ri-text"><div class="ri-title">8. PROFIT TARGET SET</div><div class="ri-desc">Swing: 50–75% gain. LEAP: 100–200% gain. Set alert BEFORE entering.</div></div></div>
+    <div class="rule-item"><div class="ri-icon">💵</div><div class="ri-text"><div class="ri-title">9. BUDGET FITS</div><div class="ri-desc">Swing max: $500/contract. LEAP max: $2,000/contract.</div></div></div>
+    <div class="rule-item"><div class="ri-icon">🔄</div><div class="ri-text"><div class="ri-title">10. BREAKEVEN REALISTIC</div><div class="ri-desc">Move required must be under 15% for reasonable probability.</div></div></div>
+  </div>
+  <div class="rule-section">
+    <div class="rule-sec-title">KEY NUMBERS</div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="sb-val" style="color:var(--green)">10K</div><div class="sb-lbl">MIN OI</div></div>
+      <div class="stat-box"><div class="sb-val" style="color:var(--green)">$500</div><div class="sb-lbl">SWING MAX</div></div>
+      <div class="stat-box"><div class="sb-val" style="color:var(--blue)">$2K</div><div class="sb-lbl">LEAP MAX</div></div>
+      <div class="stat-box"><div class="sb-val" style="color:var(--yellow)">-45%</div><div class="sb-lbl">STOP LOSS</div></div>
+      <div class="stat-box"><div class="sb-val" style="color:var(--green)">75%</div><div class="sb-lbl">SWING TARGET</div></div>
+      <div class="stat-box"><div class="sb-val" style="color:var(--blue)">200%</div><div class="sb-lbl">LEAP TARGET</div></div>
+    </div>
+  </div>
+  <div style="font-size:10px;color:var(--dark);text-align:center;padding:16px 0">Educational only · Not financial advice · Verify all prices on Robinhood before entering</div>
+</div>
+</div>
+<script>
+var DB = {
+  AAPL:{name:"Apple Inc",price:250.12,trend:"BEARISH",strength:"Moderate",iv:58,beta:1.2,sector:"Technology",note:"Bearish MACD. Supply chain concerns. Services strong but hardware declining.",catalyst:"Earnings May 2026.",chains:{"2026-04-17":{calls:[{s:255,oi:8200,a:7.30,b:6.90},{s:260,oi:11400,a:4.80,b:4.45},{s:270,oi:9800,a:1.77,b:1.50}],puts:[{s:250,oi:14200,a:6.50,b:6.10},{s:245,oi:10800,a:4.20,b:3.85},{s:240,oi:12500,a:2.40,b:2.10}]},"2026-06-18":{calls:[{s:260,oi:11200,a:8.40,b:7.80},{s:270,oi:8600,a:4.20,b:3.75}],puts:[{s:245,oi:13400,a:9.20,b:8.60},{s:240,oi:11800,a:5.80,b:5.20}]},"2027-01-15":{calls:[{s:270,oi:28400,a:22.40,b:21.60},{s:280,oi:22800,a:16.80,b:16.00},{s:300,oi:18600,a:7.40,b:6.80}],puts:[{s:230,oi:24600,a:18.60,b:17.80},{s:220,oi:19800,a:12.40,b:11.60}]}}},
+  MSFT:{name:"Microsoft Corp",price:395.55,trend:"BEARISH",strength:"Strong",iv:55,beta:1.1,sector:"Technology",note:"Down 26% from highs. Azure growth decelerating.",catalyst:"Earnings late April 2026.",chains:{"2026-04-17":{calls:[{s:400,oi:7286,a:0.34,b:0.22}],puts:[{s:385,oi:8400,a:4.20,b:3.85},{s:380,oi:11200,a:6.80,b:6.40},{s:375,oi:7300,a:9.50,b:9.10}]},"2026-06-18":{calls:[{s:410,oi:8200,a:7.80,b:7.20}],puts:[{s:380,oi:14200,a:10.40,b:9.80},{s:375,oi:11800,a:6.80,b:6.20}]},"2027-01-15":{calls:[{s:420,oi:24800,a:28.60,b:27.40},{s:440,oi:19600,a:18.40,b:17.20}],puts:[{s:360,oi:22400,a:24.80,b:23.60},{s:340,oi:18600,a:15.40,b:14.20}]}}},
+  GOOGL:{name:"Alphabet Inc",price:148.20,trend:"BEARISH",strength:"Moderate",iv:61,beta:1.3,sector:"Technology",note:"Post-earnings gap down. AI competition intensifying. Below 200-day MA.",catalyst:"DOJ antitrust decision pending.",chains:{"2026-04-17":{calls:[{s:150,oi:9800,a:3.40,b:3.05}],puts:[{s:148,oi:11600,a:4.80,b:4.40},{s:145,oi:14200,a:2.90,b:2.55},{s:140,oi:10800,a:1.30,b:1.05}]},"2026-06-18":{calls:[{s:155,oi:12400,a:7.80,b:7.20}],puts:[{s:143,oi:14800,a:8.60,b:7.90},{s:140,oi:12600,a:5.40,b:4.80}]},"2027-01-15":{calls:[{s:160,oi:22800,a:18.60,b:17.80},{s:170,oi:18400,a:12.40,b:11.60}],puts:[{s:130,oi:20600,a:16.80,b:16.00},{s:120,oi:16400,a:9.60,b:8.80}]}}},
+  META:{name:"Meta Platforms",price:613.71,trend:"BEARISH",strength:"Strong",iv:81,beta:1.6,sector:"Social Media",note:"Down ~8% after jury ruling. Near 52-week lows. High IV.",catalyst:"Earnings late April.",chains:{"2026-04-17":{calls:[{s:640,oi:12400,a:4.40,b:4.00},{s:650,oi:18600,a:1.07,b:0.88}],puts:[{s:600,oi:22400,a:8.50,b:8.00},{s:580,oi:16800,a:3.80,b:3.40}]},"2027-01-15":{calls:[{s:680,oi:18400,a:62.40,b:61.00},{s:720,oi:14800,a:42.80,b:41.40}],puts:[{s:540,oi:16800,a:56.40,b:55.00},{s:500,oi:13400,a:36.80,b:35.60}]}}},
+  AMZN:{name:"Amazon.com",price:207.67,trend:"BEARISH",strength:"Moderate",iv:62,beta:1.4,sector:"Technology",note:"Bear flag breakdown. Below 200-day MA.",catalyst:"Earnings late April 2026.",chains:{"2026-04-17":{calls:[{s:212,oi:11400,a:2.80,b:2.45},{s:215,oi:14200,a:0.95,b:0.72}],puts:[{s:205,oi:18600,a:4.20,b:3.85},{s:200,oi:22400,a:2.10,b:1.85}]},"2027-01-15":{calls:[{s:230,oi:21600,a:24.80,b:23.60},{s:250,oi:17400,a:14.60,b:13.60}],puts:[{s:180,oi:19400,a:20.40,b:19.20},{s:165,oi:15600,a:11.60,b:10.80}]}}},
+  NVDA:{name:"NVIDIA Corp",price:183.22,trend:"BEARISH",strength:"Strong",iv:68,beta:1.9,sector:"Semiconductors",note:"SOX broken below 100-day MA. AI spend concerns. Massive OI across chain.",catalyst:"China export restrictions.",chains:{"2026-04-01":{calls:[{s:185,oi:22400,a:3.80,b:3.40}],puts:[{s:180,oi:19800,a:3.60,b:3.20},{s:175,oi:14400,a:1.20,b:0.95},{s:170,oi:11200,a:0.38,b:0.24}]},"2026-04-10":{calls:[{s:185,oi:26400,a:5.20,b:4.80},{s:190,oi:22600,a:2.60,b:2.25}],puts:[{s:180,oi:22800,a:5.40,b:4.90},{s:175,oi:17600,a:2.40,b:2.05},{s:170,oi:13400,a:0.85,b:0.62}]},"2026-04-17":{calls:[{s:180,oi:26134,a:10.75,b:10.40},{s:185,oi:34908,a:7.90,b:7.60},{s:190,oi:41733,a:5.55,b:5.20},{s:195,oi:27125,a:3.75,b:3.40},{s:200,oi:59131,a:2.43,b:2.10},{s:210,oi:54960,a:0.95,b:0.80}],puts:[{s:175,oi:6739,a:7.75,b:7.40},{s:170,oi:9938,a:3.40,b:3.10},{s:165,oi:7367,a:1.02,b:0.85}]},"2026-04-24":{calls:[{s:190,oi:31500,a:7.20,b:6.90},{s:195,oi:19800,a:5.10,b:4.80},{s:200,oi:44200,a:3.40,b:3.10}],puts:[{s:175,oi:11200,a:5.20,b:4.90},{s:170,oi:14800,a:2.80,b:2.50}]},"2026-06-18":{calls:[{s:195,oi:24200,a:16.40,b:15.60},{s:200,oi:32800,a:11.80,b:11.00}],puts:[{s:170,oi:22400,a:11.40,b:10.60},{s:165,oi:18800,a:7.20,b:6.50}]},"2027-01-15":{calls:[{s:200,oi:42800,a:34.60,b:33.40},{s:220,oi:36400,a:24.80,b:23.60},{s:250,oi:28800,a:14.40,b:13.40}],puts:[{s:160,oi:38600,a:28.80,b:27.60},{s:150,oi:31400,a:19.60,b:18.40}]},"2028-01-15":{calls:[{s:250,oi:24800,a:56.40,b:54.80},{s:300,oi:19600,a:36.80,b:35.40}],puts:[{s:140,oi:22400,a:44.80,b:43.40},{s:120,oi:18200,a:28.60,b:27.40}]}}},
+  AMD:{name:"Advanced Micro Dev",price:98.40,trend:"BEARISH",strength:"Strong",iv:71,beta:1.8,sector:"Semiconductors",note:"Following NVDA lower. SOX breakdown.",catalyst:"Earnings late April.",chains:{"2026-04-17":{calls:[{s:100,oi:18400,a:4.20,b:3.90},{s:105,oi:12600,a:2.10,b:1.85}],puts:[{s:95,oi:16800,a:2.90,b:2.60},{s:90,oi:21400,a:1.20,b:0.98}]},"2026-06-18":{calls:[{s:105,oi:16800,a:8.40,b:7.80}],puts:[{s:90,oi:22600,a:5.60,b:5.05},{s:85,oi:16400,a:2.60,b:2.20}]},"2027-01-15":{calls:[{s:115,oi:28400,a:22.40,b:21.40},{s:125,oi:22800,a:14.80,b:13.80}],puts:[{s:80,oi:26400,a:19.60,b:18.60},{s:70,oi:21200,a:11.40,b:10.60}]}}},
+  INTC:{name:"Intel Corp",price:18.40,trend:"BEARISH",strength:"Strong",iv:74,beta:1.5,sector:"Semiconductors",note:"Multi-year decline. Losing share to NVDA/AMD.",catalyst:"New CEO turnaround Q2.",chains:{"2026-04-17":{calls:[{s:19,oi:22400,a:0.65,b:0.50},{s:20,oi:31800,a:0.28,b:0.18}],puts:[{s:18,oi:28400,a:0.72,b:0.58},{s:17,oi:34200,a:0.35,b:0.25},{s:16,oi:26800,a:0.15,b:0.09}]},"2027-01-15":{calls:[{s:22,oi:24800,a:3.80,b:3.40},{s:25,oi:19600,a:1.80,b:1.50}],puts:[{s:15,oi:22400,a:3.40,b:3.00},{s:12,oi:18200,a:1.60,b:1.30}]}}},
+  MU:{name:"Micron Technology",price:89.20,trend:"BULLISH",strength:"Moderate",iv:66,beta:1.7,sector:"Semiconductors",note:"Memory cycle turning up. HBM demand strong.",catalyst:"Earnings beat. Strong HBM guidance.",chains:{"2026-04-17":{calls:[{s:90,oi:14800,a:5.20,b:4.80},{s:95,oi:11400,a:2.40,b:2.10},{s:100,oi:18200,a:0.85,b:0.65}],puts:[{s:85,oi:7200,a:2.40,b:2.10}]},"2027-01-15":{calls:[{s:110,oi:22800,a:18.40,b:17.40},{s:120,oi:18400,a:11.60,b:10.80}],puts:[{s:70,oi:20600,a:14.80,b:14.00},{s:60,oi:16400,a:7.60,b:6.90}]}}},
+  AVGO:{name:"Broadcom Inc",price:182.40,trend:"BEARISH",strength:"Moderate",iv:57,beta:1.4,sector:"Semiconductors",note:"SOX breakdown weighing on all semis.",catalyst:"Earnings June.",chains:{"2026-04-17":{calls:[{s:185,oi:12400,a:6.20,b:5.80},{s:190,oi:10800,a:3.10,b:2.75}],puts:[{s:175,oi:18400,a:4.20,b:3.80},{s:170,oi:13200,a:1.90,b:1.60}]},"2027-01-15":{calls:[{s:200,oi:18800,a:24.80,b:23.60},{s:215,oi:14600,a:15.40,b:14.40}],puts:[{s:155,oi:16400,a:21.60,b:20.60},{s:140,oi:12800,a:12.40,b:11.60}]}}},
+  SPY:{name:"S&P 500 ETF",price:650.34,trend:"BEARISH",strength:"Moderate",iv:72,beta:1.0,sector:"ETF",note:"Market in confirmed downtrend. 5th losing week. Heavy institutional hedging.",catalyst:"Nonfarm Payrolls Friday.",chains:{"2026-04-01":{calls:[{s:655,oi:8400,a:7.80,b:7.20}],puts:[{s:645,oi:12800,a:6.80,b:6.20},{s:640,oi:9600,a:3.80,b:3.35}]},"2026-04-10":{calls:[{s:658,oi:9800,a:10.40,b:9.80}],puts:[{s:645,oi:16400,a:9.80,b:9.20},{s:640,oi:13200,a:6.40,b:5.80}]},"2026-04-17":{calls:[{s:670,oi:5923,a:15.64,b:15.10},{s:680,oi:9476,a:9.73,b:9.20}],puts:[{s:665,oi:31327,a:12.63,b:12.10},{s:660,oi:34417,a:11.13,b:10.60},{s:640,oi:18900,a:5.80,b:5.40},{s:620,oi:12400,a:2.10,b:1.85}]},"2026-04-24":{calls:[{s:665,oi:7800,a:14.40,b:13.60}],puts:[{s:642,oi:18600,a:13.80,b:13.00},{s:637,oi:14400,a:9.40,b:8.70}]},"2026-05-15":{calls:[{s:668,oi:10800,a:18.40,b:17.40}],puts:[{s:638,oi:22400,a:17.60,b:16.60},{s:630,oi:18200,a:11.40,b:10.60}]},"2026-06-18":{calls:[{s:675,oi:12400,a:24.80,b:23.60}],puts:[{s:630,oi:26400,a:24.40,b:23.20},{s:620,oi:21200,a:16.20,b:15.20}]},"2027-01-15":{calls:[{s:700,oi:32400,a:52.40,b:51.00},{s:720,oi:26800,a:38.60,b:37.40}],puts:[{s:600,oi:29600,a:46.80,b:45.60},{s:580,oi:24200,a:32.40,b:31.40}]}}},
+  QQQ:{name:"Nasdaq 100 ETF",price:456.20,trend:"BEARISH",strength:"Moderate",iv:69,beta:1.3,sector:"ETF",note:"Tech-heavy ETF. All Mag7 stocks down YTD.",catalyst:"Big tech earnings.",chains:{"2026-04-17":{calls:[{s:470,oi:12400,a:5.20,b:4.85},{s:480,oi:9800,a:1.85,b:1.55}],puts:[{s:450,oi:14200,a:7.80,b:7.40},{s:440,oi:18600,a:4.10,b:3.75},{s:430,oi:11400,a:1.90,b:1.65}]},"2027-01-15":{calls:[{s:490,oi:26400,a:42.80,b:41.40},{s:510,oi:21200,a:28.60,b:27.40}],puts:[{s:410,oi:24200,a:38.80,b:37.60},{s:390,oi:19600,a:24.40,b:23.40}]}}},
+  IWM:{name:"Russell 2000 ETF",price:189.40,trend:"BEARISH",strength:"Moderate",iv:66,beta:1.2,sector:"ETF",note:"Small caps underperforming. Risk-off hits IWM hardest.",catalyst:"Jobs data Friday.",chains:{"2026-04-17":{calls:[{s:200,oi:13200,a:1.20,b:0.98}],puts:[{s:185,oi:16800,a:2.90,b:2.60},{s:180,oi:22100,a:1.30,b:1.05}]},"2027-01-15":{calls:[{s:210,oi:18400,a:18.60,b:17.60}],puts:[{s:165,oi:16800,a:16.40,b:15.60},{s:155,oi:13400,a:9.80,b:9.00}]}}},
+  GLD:{name:"SPDR Gold ETF",price:234.80,trend:"BULLISH",strength:"Strong",iv:22,beta:0.1,sector:"ETF",note:"Gold up 72% in 2025. Safe haven demand. Low IV = cheap options.",catalyst:"Iran ceasefire risk. Fed policy.",chains:{"2026-04-17":{calls:[{s:238,oi:8400,a:3.80,b:3.40},{s:242,oi:12600,a:1.90,b:1.60}],puts:[{s:232,oi:6200,a:3.40,b:3.00}]},"2027-01-15":{calls:[{s:255,oi:16800,a:18.40,b:17.60},{s:265,oi:13400,a:12.40,b:11.60}],puts:[{s:210,oi:14800,a:14.80,b:14.00},{s:200,oi:11600,a:8.60,b:7.90}]}}},
+  XLE:{name:"Energy Select ETF",price:98.40,trend:"BULLISH",strength:"Strong",iv:34,beta:0.8,sector:"ETF",note:"Only sector UP over past month. Oil above $100.",catalyst:"Iran war trajectory.",chains:{"2026-04-17":{calls:[{s:100,oi:14800,a:2.80,b:2.45},{s:102,oi:11200,a:1.50,b:1.20}],puts:[{s:96,oi:6800,a:1.30,b:1.05}]},"2027-01-15":{calls:[{s:108,oi:14400,a:10.40,b:9.80},{s:112,oi:11200,a:6.80,b:6.20}],puts:[{s:88,oi:12800,a:9.80,b:9.20},{s:84,oi:10200,a:5.60,b:5.00}]}}},
+  TSLA:{name:"Tesla Inc",price:391.20,trend:"BEARISH",strength:"Moderate",iv:74,beta:2.0,sector:"EV",note:"Broke below 200-day MA. Brand sentiment weakening.",catalyst:"Robotaxi timeline. Q1 deliveries.",chains:{"2026-04-17":{calls:[{s:400,oi:2499,a:13.35,b:12.90}],puts:[{s:380,oi:12400,a:9.90,b:9.40},{s:370,oi:10800,a:6.40,b:5.95},{s:360,oi:14200,a:3.85,b:3.45}]},"2027-01-15":{calls:[{s:450,oi:12800,a:58.40,b:57.00},{s:500,oi:10400,a:38.80,b:37.60}],puts:[{s:320,oi:11600,a:52.40,b:51.00},{s:290,oi:9400,a:32.80,b:31.60}]}}},
+  JPM:{name:"JP Morgan Chase",price:228.40,trend:"BEARISH",strength:"Moderate",iv:42,beta:1.1,sector:"Finance",note:"Financials topping. High rates. Recession fears.",catalyst:"Q1 earnings April 11.",chains:{"2026-04-17":{calls:[{s:235,oi:9400,a:2.10,b:1.80}],puts:[{s:225,oi:11200,a:2.80,b:2.45},{s:222,oi:9400,a:1.30,b:1.05}]},"2027-01-15":{calls:[{s:255,oi:18400,a:24.80,b:23.60}],puts:[{s:200,oi:16800,a:20.80,b:19.80},{s:185,oi:13400,a:11.40,b:10.60}]}}},
+  BAC:{name:"Bank of America",price:38.90,trend:"BEARISH",strength:"Moderate",iv:46,beta:1.3,sector:"Finance",note:"Rate sensitivity. Credit card delinquencies rising.",catalyst:"Q1 earnings April 15.",chains:{"2026-04-17":{calls:[{s:40,oi:22400,a:0.85,b:0.65},{s:41,oi:18600,a:0.38,b:0.25}],puts:[{s:38,oi:19200,a:0.90,b:0.70},{s:37,oi:24600,a:0.42,b:0.28}]},"2027-01-15":{calls:[{s:44,oi:16800,a:4.80,b:4.40}],puts:[{s:32,oi:15600,a:4.20,b:3.80},{s:28,oi:12400,a:2.00,b:1.70}]}}},
+  GS:{name:"Goldman Sachs",price:498.60,trend:"BEARISH",strength:"Moderate",iv:39,beta:1.2,sector:"Finance",note:"Trading revenue down. IB slow.",catalyst:"Q1 earnings April 14.",chains:{"2026-04-17":{calls:[{s:505,oi:12400,a:8.40,b:7.80}],puts:[{s:495,oi:14800,a:9.80,b:9.20},{s:490,oi:18400,a:5.40,b:4.90}]},"2027-01-15":{calls:[{s:540,oi:14800,a:46.40,b:45.00}],puts:[{s:450,oi:13200,a:40.80,b:39.60},{s:420,oi:10400,a:24.40,b:23.40}]}}},
+  SOFI:{name:"SoFi Technologies",price:14.20,trend:"BEARISH",strength:"Moderate",iv:68,beta:1.6,sector:"Finance",note:"Fintech under pressure. High growth but unprofitable.",catalyst:"Q1 earnings May.",chains:{"2026-04-17":{calls:[{s:15,oi:18400,a:0.65,b:0.48},{s:16,oi:14200,a:0.28,b:0.18}],puts:[{s:13,oi:22400,a:0.32,b:0.20},{s:12,oi:18600,a:0.12,b:0.06}]},"2027-01-15":{calls:[{s:18,oi:14800,a:3.80,b:3.40}],puts:[{s:11,oi:13400,a:3.40,b:3.00},{s:9,oi:11200,a:1.80,b:1.50}]}}},
+  XOM:{name:"ExxonMobil",price:118.40,trend:"BULLISH",strength:"Strong",iv:28,beta:0.9,sector:"Energy",note:"Oil above $100. Only sector up this month.",catalyst:"Oil price direction.",chains:{"2026-04-17":{calls:[{s:120,oi:18400,a:3.40,b:3.00},{s:122,oi:14200,a:1.80,b:1.50}],puts:[{s:116,oi:9400,a:1.60,b:1.30}]},"2027-01-15":{calls:[{s:130,oi:16400,a:12.40,b:11.60},{s:135,oi:13200,a:8.40,b:7.80}],puts:[{s:105,oi:14800,a:10.80,b:10.20},{s:100,oi:12200,a:6.80,b:6.20}]}}},
+  CVX:{name:"Chevron Corp",price:162.80,trend:"BULLISH",strength:"Strong",iv:26,beta:0.8,sector:"Energy",note:"Benefiting from oil above $100. Strong dividend.",catalyst:"Oil price trajectory.",chains:{"2026-04-17":{calls:[{s:165,oi:12400,a:3.60,b:3.20},{s:170,oi:14600,a:0.85,b:0.62}],puts:[{s:160,oi:7800,a:1.80,b:1.50}]},"2027-01-15":{calls:[{s:178,oi:14800,a:12.40,b:11.60},{s:185,oi:11600,a:7.80,b:7.20}],puts:[{s:145,oi:13200,a:10.80,b:10.20},{s:138,oi:10400,a:6.20,b:5.65}]}}},
+  OXY:{name:"Occidental Petro",price:58.40,trend:"BULLISH",strength:"Strong",iv:38,beta:1.4,sector:"Energy",note:"Buffett-backed. Benefiting from high oil.",catalyst:"Oil price trajectory.",chains:{"2026-04-17":{calls:[{s:60,oi:18400,a:2.80,b:2.45},{s:65,oi:22600,a:0.38,b:0.24}],puts:[{s:56,oi:12400,a:1.20,b:0.98}]},"2027-01-15":{calls:[{s:68,oi:14800,a:8.80,b:8.20},{s:72,oi:11600,a:5.40,b:4.90}],puts:[{s:48,oi:13200,a:7.60,b:7.00},{s:44,oi:10400,a:4.20,b:3.75}]}}},
+  LLY:{name:"Eli Lilly",price:842.60,trend:"BEARISH",strength:"Moderate",iv:44,beta:0.6,sector:"Healthcare",note:"Weight loss drug competition intensifying.",catalyst:"GLP-1 competition data.",chains:{"2026-04-17":{calls:[{s:880,oi:6200,a:8.20,b:7.60}],puts:[{s:820,oi:9400,a:12.40,b:11.80},{s:800,oi:11200,a:5.60,b:5.10}]},"2027-01-15":{calls:[{s:920,oi:12800,a:88.40,b:87.00}],puts:[{s:740,oi:11600,a:82.40,b:81.00},{s:690,oi:9400,a:52.80,b:51.60}]}}},
+  PFE:{name:"Pfizer Inc",price:28.20,trend:"BULLISH",strength:"Weak",iv:34,beta:0.6,sector:"Healthcare",note:"New 52-week high. Pipeline recovery.",catalyst:"Pipeline drug approvals.",chains:{"2026-04-17":{calls:[{s:29,oi:21400,a:0.68,b:0.52},{s:30,oi:28600,a:0.28,b:0.18}],puts:[{s:27,oi:14200,a:0.32,b:0.20}]},"2027-01-15":{calls:[{s:33,oi:18400,a:3.80,b:3.40},{s:35,oi:14800,a:2.20,b:1.90}],puts:[{s:24,oi:16400,a:3.40,b:3.00},{s:22,oi:13200,a:1.80,b:1.50}]}}},
+  WMT:{name:"Walmart Inc",price:84.20,trend:"NEUTRAL",strength:"Weak",iv:24,beta:0.5,sector:"Consumer",note:"Defensive retail. Trade-down beneficiary.",catalyst:"Same-store sales data.",chains:{"2026-04-17":{calls:[{s:86,oi:9400,a:1.80,b:1.50},{s:90,oi:11600,a:0.25,b:0.14}],puts:[{s:82,oi:10800,a:0.80,b:0.58},{s:80,oi:14200,a:0.28,b:0.16}]},"2027-01-15":{calls:[{s:92,oi:14800,a:8.60,b:8.00},{s:96,oi:11600,a:5.40,b:4.90}],puts:[{s:74,oi:13200,a:7.80,b:7.20},{s:70,oi:10400,a:4.40,b:3.95}]}}},
+  NKE:{name:"Nike Inc",price:52.29,trend:"BEARISH",strength:"Strong",iv:58,beta:1.1,sector:"Consumer",note:"Trading near multi-year lows. Brand declining.",catalyst:"EARNINGS TONIGHT — Q3 after close.",chains:{"2026-04-17":{calls:[{s:54,oi:11200,a:2.10,b:1.80},{s:56,oi:14800,a:0.95,b:0.72}],puts:[{s:50,oi:18600,a:1.20,b:0.95},{s:48,oi:14200,a:0.48,b:0.32}]},"2027-01-15":{calls:[{s:62,oi:10800,a:8.80,b:8.20}],puts:[{s:44,oi:9800,a:8.40,b:7.80},{s:40,oi:7800,a:4.80,b:4.30}]}}},
+  DIS:{name:"Walt Disney Co",price:88.40,trend:"BEARISH",strength:"Moderate",iv:44,beta:1.1,sector:"Consumer",note:"Streaming wars. Restructuring ongoing.",catalyst:"Streaming subscriber data.",chains:{"2026-04-17":{calls:[{s:90,oi:9400,a:2.80,b:2.45}],puts:[{s:86,oi:11800,a:1.30,b:1.00},{s:84,oi:9400,a:0.48,b:0.30}]},"2027-01-15":{calls:[{s:98,oi:12400,a:10.40,b:9.80}],puts:[{s:76,oi:11200,a:9.80,b:9.20},{s:70,oi:8800,a:5.60,b:5.00}]}}},
+  LMT:{name:"Lockheed Martin",price:478.60,trend:"BULLISH",strength:"Strong",iv:26,beta:0.4,sector:"Defense",note:"Iran war driving defense spending. Record backlog.",catalyst:"Defense budget increases.",chains:{"2026-04-17":{calls:[{s:482,oi:11800,a:8.40,b:7.80},{s:488,oi:14200,a:4.20,b:3.75}],puts:[{s:475,oi:12600,a:7.80,b:7.20},{s:470,oi:10400,a:3.80,b:3.30}]},"2027-01-15":{calls:[{s:510,oi:12800,a:38.40,b:37.20},{s:530,oi:10200,a:24.80,b:23.60}],puts:[{s:440,oi:11600,a:32.80,b:31.60},{s:420,oi:9200,a:19.60,b:18.60}]}}},
+  RTX:{name:"RTX Corporation",price:128.40,trend:"BULLISH",strength:"Strong",iv:28,beta:0.5,sector:"Defense",note:"Raytheon missiles in high demand globally.",catalyst:"Defense contract awards.",chains:{"2026-04-17":{calls:[{s:130,oi:8200,a:2.80,b:2.45},{s:135,oi:10400,a:0.45,b:0.28}],puts:[{s:126,oi:5800,a:1.20,b:0.95}]},"2027-01-15":{calls:[{s:142,oi:12800,a:11.60,b:10.80},{s:148,oi:10200,a:7.40,b:6.80}],puts:[{s:114,oi:11600,a:10.40,b:9.80},{s:108,oi:9200,a:5.80,b:5.20}]}}},
+  PLTR:{name:"Palantir Tech",price:82.40,trend:"BULLISH",strength:"Moderate",iv:72,beta:1.8,sector:"Defense",note:"Defense AI contracts booming. Iran war benefits.",catalyst:"Defense AI contracts. Q1 earnings.",chains:{"2026-04-17":{calls:[{s:85,oi:14800,a:3.80,b:3.40},{s:90,oi:18400,a:0.85,b:0.62}],puts:[{s:80,oi:12600,a:1.80,b:1.50},{s:78,oi:8400,a:0.75,b:0.54}]},"2027-01-15":{calls:[{s:96,oi:22400,a:18.40,b:17.40},{s:104,oi:17800,a:12.40,b:11.60}],puts:[{s:66,oi:20400,a:15.80,b:15.00},{s:58,oi:16200,a:9.40,b:8.80}]}}},
+  BA:{name:"Boeing Co",price:148.40,trend:"BEARISH",strength:"Strong",iv:62,beta:1.4,sector:"Industrial",note:"737 MAX issues. Production problems.",catalyst:"FAA approvals. Q1 earnings.",chains:{"2026-04-17":{calls:[{s:155,oi:8200,a:3.20,b:2.80}],puts:[{s:145,oi:12800,a:4.20,b:3.75},{s:142,oi:10400,a:1.90,b:1.55}]},"2027-01-15":{calls:[{s:170,oi:12800,a:22.40,b:21.40}],puts:[{s:125,oi:11600,a:20.40,b:19.60},{s:115,oi:9400,a:12.40,b:11.60}]}}},
+  SNAP:{name:"Snap Inc",price:7.82,trend:"BEARISH",strength:"Strong",iv:88,beta:1.8,sector:"Social Media",note:"Down 80%+ from highs. User growth stalling.",catalyst:"Q1 earnings May.",chains:{"2026-04-17":{calls:[{s:8,oi:18400,a:0.45,b:0.35},{s:9,oi:14200,a:0.18,b:0.12},{s:10,oi:22600,a:0.08,b:0.04}],puts:[{s:7,oi:16800,a:0.48,b:0.38},{s:6,oi:21400,a:0.22,b:0.15}]},"2027-01-15":{calls:[{s:10,oi:14800,a:1.80,b:1.50}],puts:[{s:6,oi:13400,a:1.60,b:1.30},{s:5,oi:10800,a:0.80,b:0.58}]}}},
+  COIN:{name:"Coinbase Global",price:168.40,trend:"NEUTRAL",strength:"Weak",iv:82,beta:2.2,sector:"Crypto",note:"Crypto volumes picking up. High IV.",catalyst:"Bitcoin price action.",chains:{"2026-04-17":{calls:[{s:172,oi:8400,a:8.20,b:7.60},{s:180,oi:11200,a:2.10,b:1.75}],puts:[{s:162,oi:7400,a:4.20,b:3.75}]},"2027-01-15":{calls:[{s:200,oi:12800,a:38.40,b:37.20},{s:220,oi:10400,a:24.80,b:23.80}],puts:[{s:130,oi:11600,a:32.80,b:31.80},{s:110,oi:9400,a:18.80,b:18.00}]}}},
+  MSTR:{name:"Strategy Inc",price:139.67,trend:"NEUTRAL",strength:"Weak",iv:88,beta:2.8,sector:"Crypto",note:"Bitcoin proxy. Very high volatility.",catalyst:"Bitcoin price direction.",chains:{"2026-04-17":{calls:[{s:145,oi:6800,a:12.40,b:11.60},{s:150,oi:9200,a:7.80,b:7.10}],puts:[{s:135,oi:10600,a:6.80,b:6.10},{s:130,oi:8800,a:3.40,b:2.90}]},"2027-01-15":{calls:[{s:180,oi:11200,a:46.40,b:45.00},{s:200,oi:9200,a:32.80,b:31.60}],puts:[{s:100,oi:10400,a:38.80,b:37.60},{s:80,oi:8400,a:22.40,b:21.40}]}}},
+  ONDS:{name:"Ondas Inc",price:8.80,trend:"BEARISH",strength:"Moderate",iv:95,beta:2.4,sector:"Defense",note:"Drone tech. Revenue +629% YoY but $101M loss.",catalyst:"Defense contracts. Earnings May.",chains:{"2026-04-17":{calls:[{s:9,oi:4800,a:0.85,b:0.65}],puts:[{s:8,oi:3800,a:0.90,b:0.68},{s:7,oi:2800,a:0.42,b:0.28}]},"2027-01-15":{calls:[{s:12,oi:6800,a:2.80,b:2.40},{s:15,oi:5400,a:1.40,b:1.10}],puts:[{s:6,oi:6200,a:2.60,b:2.20},{s:5,oi:4800,a:1.20,b:0.95}]}}},
+  PYPL:{name:"PayPal Holdings",price:62.80,trend:"BEARISH",strength:"Moderate",iv:52,beta:1.3,sector:"Finance",note:"Competition from Apple Pay. Growth slowing.",catalyst:"Q1 earnings May.",chains:{"2026-04-17":{calls:[{s:64,oi:8200,a:2.60,b:2.25}],puts:[{s:60,oi:12600,a:1.40,b:1.10},{s:58,oi:10200,a:0.55,b:0.36}]},"2027-01-15":{calls:[{s:74,oi:12800,a:10.40,b:9.80}],puts:[{s:50,oi:11600,a:9.80,b:9.20},{s:44,oi:9200,a:5.40,b:4.90}]}}},
+  SBUX:{name:"Starbucks Corp",price:82.40,trend:"BEARISH",strength:"Moderate",iv:46,beta:0.9,sector:"Consumer",note:"Traffic declining. China weakness.",catalyst:"Same-store sales data.",chains:{"2026-04-17":{calls:[{s:84,oi:10800,a:2.60,b:2.25}],puts:[{s:80,oi:16400,a:1.50,b:1.20},{s:78,oi:13200,a:0.60,b:0.42}]},"2027-01-15":{calls:[{s:90,oi:14800,a:8.60,b:8.00}],puts:[{s:70,oi:13400,a:8.20,b:7.60},{s:65,oi:10800,a:4.60,b:4.10}]}}}
+};
+var state={ticker:null,expDate:'2026-04-17',mode:'swing',dir:'AUTO',sector:'ALL'};
+var SECTORS=['ALL','Technology','Semiconductors','ETF','Social Media','EV','Finance','Energy','Healthcare','Consumer','Defense','Industrial','Crypto'];
+var EXPIRATIONS=[{v:'2026-04-01',l:'Apr 1',leap:false},{v:'2026-04-10',l:'Apr 10',leap:false},{v:'2026-04-17',l:'Apr 17',leap:false},{v:'2026-04-24',l:'Apr 24',leap:false},{v:'2026-05-01',l:'May 1',leap:false},{v:'2026-05-15',l:'May 15',leap:false},{v:'2026-06-18',l:'Jun 18',leap:false},{v:'2026-07-17',l:'Jul 17',leap:false},{v:'2026-09-18',l:'Sep 18',leap:false},{v:'2027-01-15',l:"Jan '27 LEAP",leap:true},{v:'2027-06-17',l:"Jun '27 LEAP",leap:true},{v:'2028-01-15',l:"Jan '28 LEAP",leap:true}];
+
+function switchTab(tab){['scan','analyze','rules'].forEach(function(t){document.getElementById('tab-'+t).className='tab'+(t===tab?' active':'');document.getElementById('screen-'+t).className='screen'+(t===tab?' active':'');});}
+
+function buildSectorChips(){var row=document.getElementById('sectorRow');row.innerHTML=SECTORS.map(function(s){return'<button class="s-chip'+(s===state.sector?' active':'')+'" onclick="setSector(\''+s+'\')">'+(s==='ALL'?'All':s)+'</button>';}).join('');}
+
+function setSector(s){state.sector=s;buildSectorChips();buildTickerGrid();}
+
+function buildTickerGrid(){var f=document.getElementById('searchBox').value.toUpperCase().trim();var grid=document.getElementById('tickerGrid');var keys=Object.keys(DB).filter(function(t){var s=DB[t];return(state.sector==='ALL'||s.sector===state.sector)&&(!f||t.indexOf(f)>=0||s.name.toUpperCase().indexOf(f)>=0);});document.getElementById('tickerCount').textContent=keys.length+' tickers';if(!keys.length){grid.innerHTML='<div class="no-res">No tickers found</div>';return;}grid.innerHTML=keys.map(function(t){var s=DB[t];var tc=s.trend==='BEARISH'?'bear':s.trend==='BULLISH'?'bull':'neut';return'<div class="ticker-card'+(t===state.ticker?' selected':'')+'" onclick="selectTicker(\''+t+'\')"><div class="tc-symbol">'+t+'</div><div class="tc-name">'+s.name+'</div><div class="tc-row"><div class="tc-price">$'+s.price+'</div><div class="tc-trend '+tc+'">'+s.trend+'</div></div></div>';}).join('');}
+
+function filterTickers(){buildTickerGrid();}
+
+function selectTicker(t){state.ticker=t;buildTickerGrid();renderTickerDisplay();buildExpPills();switchTab('analyze');}
+
+function renderTickerDisplay(){var disp=document.getElementById('tickerDisplay');var expSec=document.getElementById('expSection');if(!state.ticker){disp.innerHTML='<div class="no-ticker-msg">Go to SCAN tab and tap a ticker</div>';expSec.style.display='none';return;}var s=DB[state.ticker];var tc=s.trend==='BEARISH'?'bear':s.trend==='BULLISH'?'bull':'neut';disp.innerHTML='<div class="selected-ticker-display"><div class="std-left"><div class="sym">'+state.ticker+'</div><div class="nm">'+s.name+' · '+s.sector+'</div></div><div class="std-right"><div class="price">$'+s.price+'</div><div class="trend-big '+tc+'">'+s.trend+'</div></div></div>';expSec.style.display='block';}
+
+function buildExpPills(){if(!state.ticker)return;var chainKeys=Object.keys(DB[state.ticker].chains);var row=document.getElementById('expRow');row.innerHTML=EXPIRATIONS.filter(function(e){return chainKeys.indexOf(e.v)>=0;}).map(function(e){return'<button class="exp-pill'+(e.leap?' leap':'')+(e.v===state.expDate?' active':'')+'" onclick="setExp(\''+e.v+'\','+e.leap+')">'+e.l+'</button>';}).join('');if(chainKeys.indexOf(state.expDate)<0){state.expDate=chainKeys[0];buildExpPills();}}
+
+function setExp(v,isLeap){state.expDate=v;if(isLeap)setMode('leap');buildExpPills();}
+
+function setMode(m){state.mode=m;document.getElementById('modeSwing').className='tog '+(m==='swing'?'on':'off');document.getElementById('modeLeap').className='tog '+(m==='leap'?'on blue-tog':'off');document.getElementById('leapNote').style.display=m==='leap'?'block':'none';}
+
+function setDir(d){state.dir=d;['Auto','Call','Put'].forEach(function(x){document.getElementById('dir'+x).className='tog '+(d===x.toUpperCase()?'on':'off');});}
+
+function gc(s){return s>=8?'#00ff88':s>=6?'#ffd700':'#ff4444';}
+function gp(p){return p>=55?'#00ff88':p>=35?'#ffd700':'#ff4444';}
+function gi(i){return i.startsWith('✅')?'#00ff88':i.startsWith('⚠️')?'#ffd700':'#ff4444';}
+function gib(i){return i.startsWith('✅')?'rgba(0,255,136,0.07)':i.startsWith('⚠️')?'rgba(255,215,0,0.07)':'rgba(255,68,68,0.07)';}
+function fmt(n){return(n||0).toLocaleString();}
+
+function runScan(){
+var errBox=document.getElementById('errBox');
+var area=document.getElementById('resultsArea');
+errBox.style.display='none';
+if(!state.ticker){errBox.innerHTML='Go to SCAN tab and select a ticker first.';errBox.style.display='block';return;}
+var stock=DB[state.ticker];
+var isLeap=state.mode==='leap';
+var budget=isLeap?2000:500;
+var minOI=10000;
+var targetLow=isLeap?100:50;
+var targetHigh=isLeap?300:75;
+var chainKeys=Object.keys(stock.chains);
+var chainKey=state.expDate;
+if(chainKeys.indexOf(chainKey)<0){var isReqLeap=chainKey>='2027-01-01';var filtered=chainKeys.filter(function(k){return isReqLeap?k>='2027-01-01':k<'2027-01-01';});chainKey=filtered.length?filtered[filtered.length-1]:chainKeys[0];}
+var chain=stock.chains[chainKey];
+var expLabel=new Date(chainKey+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+var daysOut=Math.round((new Date(chainKey)-new Date('2026-03-31'))/86400000);
+var warned=chainKey!==state.expDate;
+var all=[];
+chain.calls.forEach(function(c){all.push({s:c.s,oi:c.oi,a:c.a,b:c.b,type:'CALL'});});
+chain.puts.forEach(function(c){all.push({s:c.s,oi:c.oi,a:c.a,b:c.b,type:'PUT'});});
+all.sort(function(x,y){return y.oi-x.oi;});
+var top6=all.slice(0,6);
+var bearish=stock.trend==='BEARISH';
+var forcePut=state.dir==='PUT';
+var forceCall=state.dir==='CALL';
+var preferPut=forceCall?false:forcePut?true:bearish;
+var qualified=all.filter(function(x){var lim=(x.a+x.b)/2;return x.oi>=minOI&&Math.round(lim*100)<=budget;});
+var noQualified=!qualified.length;
+var preferred=qualified.filter(function(x){return preferPut?x.type==='PUT':x.type==='CALL';}).sort(function(x,y){return y.oi-x.oi;});
+var best=preferred[0]||qualified[0]||all[0];
+var lim=+((best.a+best.b)/2).toFixed(2);
+var cost=Math.round(lim*100);
+var be=best.type==='CALL'?+(best.s+lim).toFixed(2):+(best.s-lim).toFixed(2);
+var oiOk=best.oi>=minOI;
+var budOk=cost<=budget;
+var wTrend=forceCall?best.type==='CALL':forcePut?best.type==='PUT':(bearish&&best.type==='PUT')||(!bearish&&best.type==='CALL');
+var ivOk=stock.iv<50;
+var daysOk=isLeap?daysOut>=180:(daysOut>=10&&daysOut<=80);
+var distPct=Math.abs((be-stock.price)/stock.price*100);
+var checks=[
+wTrend?'✅ Trend '+stock.trend+' — '+best.type+' goes with it':'❌ '+best.type+' AGAINST '+stock.trend+' trend',
+oiOk?'✅ OI '+fmt(best.oi)+' passes 10K threshold':'❌ OI '+fmt(best.oi)+' — DISQUALIFIED',
+bearish?'✅ Volume confirming bearish pressure':'✅ Volume confirming bullish momentum',
+'✅ Limit $'+lim+' = ('+best.b+' + '+best.a+') ÷ 2',
+ivOk?'✅ IV '+stock.iv+'% — under 50, fair pricing':'⚠️ IV '+stock.iv+'% — elevated, expensive',
+daysOk?'✅ '+daysOut+' days — in '+(isLeap?'LEAP':'swing')+' window':'⚠️ '+daysOut+' days — check expiration',
+'✅ Max loss = $'+cost+' (full premium)',
+'✅ Target: $'+Math.round(cost*targetLow/100)+'–$'+Math.round(cost*targetHigh/100)+' ('+targetLow+'–'+targetHigh+'%)',
+budOk?'✅ $'+cost+' fits $'+budget+' budget':'❌ $'+cost+' over $'+budget+' budget',
+'✅ Breakeven $'+be+' ('+distPct.toFixed(1)+'% move needed)'
+];
+var score=checks.filter(function(c){return c.startsWith('✅');}).length;
+var prob=wTrend?55:30;
+if(distPct<3)prob+=15;else if(distPct<6)prob+=5;else if(distPct>15)prob-=15;
+if(stock.strength==='Strong')prob+=8;
+if(!oiOk)prob-=15;
+if(isLeap)prob+=10;
+prob=Math.max(10,Math.min(82,prob));
+var oiStatus=!oiOk?'❌ DISQUALIFIED — OI under 10,000':!budOk?'⚠️ OVER BUDGET — exceeds $'+budget:(oiOk&&wTrend&&score>=8)?'✅ STRONG — OI, budget and trend pass':'✅ QUALIFIED — OI and budget pass';
+var verdict=!oiOk?'SKIP — OI disqualified.':!wTrend?'CAUTION — fighting the trend.':score>=8?'STRONG SETUP — enter at limit price.':score>=6?'WATCH — verify at open.':'WEAK — wait for better entry.';
+var disqList=all.filter(function(x){return x.oi<minOI;}).slice(0,3);
+var scoreColor=gc(score);
+var h='';
+if(warned)h+='<div class="warn-box">⚠️ Showing '+expLabel+' — closest available for '+state.ticker+'</div>';
+if(isLeap)h+='<div style="background:rgba(68,170,255,0.07);border:1px solid rgba(68,170,255,0.18);border-radius:10px;padding:9px 12px;font-size:11px;color:#4af;margin-bottom:10px">📘 LEAP · '+daysOut+' days · Budget $2,000 · Target 100-300%</div>';
+if(stock.catalyst)h+='<div class="catalyst-box">⚡ '+stock.catalyst+'</div>';
+if(noQualified)h+='<div class="no-qual-box">⚠️ NO QUALIFYING TRADES — All strikes fail OI or budget. Try a later date or LEAP mode.</div>';
+h+='<div class="score-card" style="background:rgba(0,255,136,0.025);border:1px solid '+scoreColor+'30">';
+h+='<div class="sc-top"><div><div class="rc-label">BEST SETUP '+(isLeap?'· LEAP':'· SWING')+'</div>';
+h+='<div class="sc-title">'+state.ticker+' $'+best.s+'<span style="color:'+(best.type==='CALL'?'#00ff88':'#ff4444')+'">'+(best.type==='CALL'?'C':'P')+'</span></div>';
+h+='<div style="font-size:11px;color:var(--muted);margin-top:2px">'+expLabel+' · OI: '+fmt(best.oi)+'</div></div>';
+h+='<div class="sc-score"><div class="sc-num" style="color:'+scoreColor+'">'+score+'</div><div class="sc-den">/ 10</div></div></div>';
+h+='<div class="metrics-2col">';
+h+='<div class="metric-box"><div class="mb-label">LIMIT ENTRY</div><div class="mb-val">$'+lim+'</div><div class="mb-sub">(bid+ask)÷2</div></div>';
+h+='<div class="metric-box"><div class="mb-label">COST</div><div class="mb-val">$'+cost+'</div><div class="mb-sub">per contract</div></div>';
+h+='<div class="metric-box"><div class="mb-label">BREAKEVEN</div><div class="mb-val">$'+be+'</div><div class="mb-sub">'+distPct.toFixed(1)+'% move needed</div></div>';
+h+='<div class="metric-box"><div class="mb-label">DAYS OUT</div><div class="mb-val">'+daysOut+'</div><div class="mb-sub">'+(isLeap?'LEAP':'swing')+'</div></div>';
+h+='</div>';
+var oic=!oiOk?'#ff4444':(oiOk&&wTrend&&score>=7)?'#00ff88':'#ffd700';
+var oibg=!oiOk?'rgba(255,68,68,0.08)':(oiOk&&wTrend&&score>=7)?'rgba(0,255,136,0.07)':'rgba(255,215,0,0.07)';
+var oibd=!oiOk?'rgba(255,68,68,0.2)':(oiOk&&wTrend&&score>=7)?'rgba(0,255,136,0.2)':'rgba(255,215,0,0.2)';
+h+='<div class="oi-bar" style="background:'+oibg+';border:1px solid '+oibd+';color:'+oic+'">'+oiStatus+'</div>';
+h+='<div class="prob-label-row"><span style="font-size:9px;color:var(--dark);letter-spacing:2px">WIN PROBABILITY</span><span style="font-weight:800;color:'+gp(prob)+'">'+prob+'%</span></div>';
+h+='<div class="prob-track"><div class="prob-fill" style="width:'+prob+'%;background:'+gp(prob)+'"></div></div>';
+h+='<div style="font-size:11px;color:var(--muted);margin-bottom:8px">🎯 Target: <strong style="color:#00ff88">$'+Math.round(cost*targetLow/100)+'–$'+Math.round(cost*targetHigh/100)+'</strong> &nbsp;🛑 Stop: <strong style="color:#ff4444">-$'+Math.round(cost*.45)+'</strong></div>';
+h+='<div class="verdict-box" style="color:'+scoreColor+';background:rgba(0,0,0,0.4)">▶ '+verdict+'</div></div>';
+h+='<div class="result-card"><div class="rc-label">10-POINT CHECKLIST</div><div class="checklist">';
+checks.forEach(function(c){h+='<div class="check-item" style="background:'+gib(c)+';color:'+gi(c)+'">'+c+'</div>';});
+h+='</div></div>';
+h+='<div class="result-card"><div class="rc-label">TOP STRIKES BY OI</div><div class="strikes-list">';
+top6.forEach(function(s){var sl=+((s.a+s.b)/2).toFixed(2);var sc2=Math.round(sl*100);var sq=s.oi>=minOI&&sc2<=budget;var isBest=s.s===best.s&&s.type===best.type;h+='<div class="strike-row'+(isBest?' best-row':'')+'"><div><div class="sr-strike">$'+s.s+(isBest?' ★':'')+'</div></div><div class="sr-mid"><div class="sr-type" style="color:'+(s.type==='CALL'?'#00ff88':'#ff4444')+'">'+s.type+'</div><div class="sr-oi">OI: '+fmt(s.oi)+'</div></div><div class="sr-right"><div class="sr-limit">$'+sl+'</div><div class="sr-cost">$'+sc2+'</div><div><span class="sr-badge '+(sq?'sb-pass':'sb-fail')+'">'+(sq?'✅ OK':'❌ SKIP')+'</span></div></div></div>';});
+h+='</div></div>';
+if(isLeap){var ivMsg=stock.iv>60?'IV '+stock.iv+'% is HIGH — wait for IV to drop':'IV '+stock.iv+'% — OK for LEAP entry';h+='<div class="tip-box"><strong>📘 LEAP TIPS:</strong><br>• Exit at 100-200% gain — never hold to expiry<br>• Target delta 0.40-0.60 near the money<br>• '+ivMsg+'</div>';}
+if(disqList.length){h+='<div class="disq-box"><div class="disq-label">DISQUALIFIED — OI TOO LOW</div>';disqList.forEach(function(s){h+='<div class="disq-item">❌ $'+s.s+(s.type==='CALL'?'C':'P')+' — OI '+fmt(s.oi)+'</div>';});h+='</div>';}
+h+='<div class="summary-box"><strong style="color:#00ff88">ANALYSIS: </strong>'+stock.note+'</div>';
+h+='<div class="tip-box"><strong>📱 ROBINHOOD STEPS:</strong><br>1. Search <strong>'+state.ticker+'</strong> → Trade → Trade Options<br>2. Select expiration: <strong>'+expLabel+'</strong><br>3. Select: <strong>$'+best.s+' '+(best.type==='CALL'?'CALL':'PUT')+'</strong><br>4. Set LIMIT at (bid+ask)÷2<br>5. Set +'+targetLow+'% profit alert and -45% stop<br>⚠️ Verify all prices on Robinhood before entering</div>';
+h+='<button class="clear-btn" onclick="clearResults()">✕ CLEAR RESULTS</button>';
+area.innerHTML=h;
+area.style.display='block';
+document.getElementById('screen-analyze').scrollTop=200;
+}
+
+function clearResults(){document.getElementById('resultsArea').innerHTML='';document.getElementById('resultsArea').style.display='none';document.getElementById('screen-analyze').scrollTop=0;}
+
+buildSectorChips();
+buildTickerGrid();
+</script>
+</body>
+</html>
